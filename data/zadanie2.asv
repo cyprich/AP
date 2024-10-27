@@ -1,0 +1,277 @@
+clear
+close all;  % zavrie vsetky predchadzajuce figures
+
+% nacitanie dat zo suboru
+import = readmatrix("matlabized_data2.csv");
+t = import(:, 1);
+f = import(:, 2);
+
+t = t';
+f = f';
+
+n = length(f) / 4;% dlzka jednej casti
+
+
+function vetikalne_ciary()
+    global n f t;  % aby boli variables pristupne vo funkcii    
+    xline(t(n), "--k")
+    xline(t(2*n), "--k")
+    xline(t(3*n), "--k")
+    xlim([1, 124])
+end
+
+
+
+% ------------------------------ povodne data ----------------------------
+figure(NumberTitle="off")
+hold on
+plot(t, f, "-")
+title("Data - hodnoty akcii spolocnosti EA")
+xlabel("Pocet dni od 1. 1. 2024")
+ylabel("Hodnota akcie [$]")
+xlim([1,124])
+vetikalne_ciary()
+
+% --------------------------- data rozdelit na 4 casti -------------------------
+f_split = cell(1, 4);
+t_split = cell(1, 4);
+for i = 1:4
+    f_split{i} = f((i - 1)*n+1 : i*n);
+    t_split{i} = t((i - 1)*n+1 : i*n);
+end
+
+% plot jednotlive casti
+figure(NumberTitle="off")
+title("Porovnanie jednotlivych casti dat")
+grid on
+hold on
+for i = 1:4
+    plot(t_split{1}, f_split{i}, "-", "DisplayName", sprintf('%d. cast', i));
+end
+legend
+xlim([1, n])
+ylabel("Hodnota akcie [$]")
+set(gca, "XTickLabel", [])
+
+
+% plot jednotlive casti + center
+figure(NumberTitle="off")
+title("Porovnanie jednotlivych casti dat - vycentrovane")
+grid on
+hold on 
+for i = 1:4
+    f_split{i} = f_split{i} - mean(f_split{i});
+    plot(t_split{1}, f_split{i}, "-", "DisplayName", sprintf('%d. cast', i));
+end
+legend
+xlim([1, n])
+ylabel("Relativna hodnota akcie [$]")
+set(gca, "XTickLabel", [])
+
+
+
+% -------------- ortonormalna mocninova baza 6 rozmerneho priestoru ------
+u0 = t_split{1}.^0;
+u1 = t_split{1}.^1;
+u2 = t_split{1}.^2;
+u3 = t_split{1}.^3;
+u4 = t_split{1}.^4;
+u5 = t_split{1}.^5;
+
+b0 = u0;
+
+c1 = (u1 * b0') / (b0 * b0');
+b1 = u1 - c1*b0;
+
+c20 = (u2 * b0') / (b0 * b0');
+c21 = (u2 * b1') / (b1 * b1');
+b2 = u2 - (c20*b0 + c21*b1);
+
+c30 = (u3 * b0') / (b0 * b0');
+c31 = (u3 * b1') / (b1 * b1');
+c32 = (u3 * b2') / (b2 * b2');
+b3 = u3 - (c30*b0 + c31*b1 + c32*b2);
+
+c40 = (u4 * b0') / (b0 * b0');
+c41 = (u4 * b1') / (b1 * b1');
+c42 = (u4 * b2') / (b2 * b2');
+c43 = (u4 * b3') / (b3 * b3');
+b4 = u4 - (c40*b0 + c41*b1 + c42*b2 + c43*b3);
+
+c50 = (u5 * b0') / (b0 * b0');
+c51 = (u5 * b1') / (b1 * b1');
+c52 = (u5 * b2') / (b2 * b2');
+c53 = (u5 * b3') / (b3 * b3');
+c54 = (u5 * b3') / (b3 * b3');
+b5 = u5 - (c50*b0 + c51*b1 + c52*b2 + c53*b3 + c54*b4);
+
+b0 = b0/norm(b0);
+b1 = b1/norm(b1);
+b2 = b2/norm(b2);
+b3 = b3/norm(b3);
+b4 = b4/norm(b4);
+b5 = b5/norm(b5);
+
+b = {b0, b1, b2, b3, b4, b5};
+
+figure(NumberTitle="off")
+hold on
+grid on
+for i = 1:6
+    plot(t_split{1}, b{i}, "-")
+end
+title("Ortonormalna mocninova baza 6-rozmerneho priestoru")
+xlim([1, n])
+
+% ------- najst suradnice dat v ortog. mocninovej baze 6D podpriestoru --------
+c_10 = (f_split{1} * b0') / (b0 * b0');
+c_11 = (f_split{1} * b1') / (b1 * b1');
+c_12 = (f_split{1} * b2') / (b2 * b2');
+c_13 = (f_split{1} * b3') / (b3 * b3');
+c_14 = (f_split{1} * b4') / (b4 * b4');
+c_15 = (f_split{1} * b5') / (b5 * b5');
+
+c_20 = (f_split{2} * b0') / (b0 * b0');
+c_21 = (f_split{2} * b1') / (b1 * b1');
+c_22 = (f_split{2} * b2') / (b2 * b2');
+c_23 = (f_split{2} * b3') / (b3 * b3');
+c_24 = (f_split{2} * b4') / (b4 * b4');
+c_25 = (f_split{2} * b5') / (b5 * b5');
+
+c_30 = (f_split{3} * b0') / (b0 * b0');
+c_31 = (f_split{3} * b1') / (b1 * b1');
+c_32 = (f_split{3} * b2') / (b2 * b2');
+c_33 = (f_split{3} * b3') / (b3 * b3');
+c_34 = (f_split{3} * b4') / (b4 * b4');
+c_35 = (f_split{3} * b5') / (b5 * b5');
+
+c_40 = (f_split{4} * b0') / (b0 * b0');
+c_41 = (f_split{4} * b1') / (b1 * b1');
+c_42 = (f_split{4} * b2') / (b2 * b2');
+c_43 = (f_split{4} * b3') / (b3 * b3');
+c_44 = (f_split{4} * b4') / (b4 * b4');
+c_45 = (f_split{4} * b5') / (b5 * b5');
+
+C = [c_10 c_11 c_12 c_13 c_14 c_15
+    c_20 c_21 c_22 c_23 c_24 c_25
+    c_30 c_31 c_32 c_33 c_34 c_35
+    c_40 c_41 c_42 c_43 c_44 c_45];
+
+
+
+
+% ------------ zobrazit postupne vycentrovane data + priemety -----------
+b = {b1, b2, b3, b4, b5};
+
+
+% pre kazde b (priemet do b-rozmerneho priestoru)
+for i = 1:5
+    figure(NumberTitle='off');
+
+    hold on
+    grid on
+    for j = 1:4
+        plot(t_split{j}, f_split{j}, "-b")
+        plot(t_split{j}, C(j, i+1) * b{i}, "-r")
+    end
+    vetikalne_ciary()
+    title(sprintf("Priemet dat do %d-rozmerneho priestoru", i))
+    xlabel("Pocet dni od 1. 1. 2024")
+    ylabel("Relativna hodnota akcie [$]")
+    
+    dummy1 = plot(NaN, NaN, "-b", "DisplayName", "Povodne data");
+    dummy2 = plot(NaN, NaN,  "-r", "DisplayName", sprintf("Priemet v %d-rozmernom priestore", i));
+    legend([dummy1, dummy2])
+
+    hold off
+end
+
+
+
+
+
+% ---------------------------------------- aproximacia -----------------
+
+figure(NumberTitle='off');
+for i = 1:4
+    hold on
+    grid on
+    for j = 1:4
+        plot(t_split{i}, f_split{i}, "-b")
+        plot(t_split{i}, C(i, 3) * b{2}, "--r")
+        plot(t_split{i}, C(i, 2)*b{1} + C(i, 3)*b{2}, "-k", LineWidth=1.5)
+    end
+    vetikalne_ciary()
+    title("Aproximacia pomocou prvych dvoch najvyznamnejsich mocninovych trendov")
+    xlabel("Pocet dni od 1. 1. 2024")
+    ylabel("Relativna hodnota akcie [$]")
+
+    dummy1 = plot(NaN, NaN, "-b", "DisplayName", "Povodne data");
+    dummy2 = plot(NaN, NaN,  "--r", "DisplayName", "Priemet");
+    dummy3 = plot(NaN, NaN,  "-k", "LineWidth", 1.5, "DisplayName", "Aproximacia");
+    legend([dummy1, dummy2, dummy3])
+    hold off
+    
+    
+end
+
+figure(NumberTitle='off');
+for i = 1:4
+    hold on
+    grid on
+    for j = 1:4
+        plot(t_split{i}, f_split{i}, "-b")
+        plot(t_split{i}, C(i, 4) * b{3}, "--r")
+        plot(t_split{i}, C(i, 2)*b{1} + C(i, 3)*b{2} + C(i, 4)*b{3}, "-k", LineWidth=1.5)
+    end
+    vetikalne_ciary()
+    title("Aproximacia pomocou prvych troch najvyznamnejsich mocninovych trendov")
+    xlabel("Pocet dni od 1. 1. 2024")
+    ylabel("Relativna hodnota akcie [$]")
+
+    dummy1 = plot(NaN, NaN, "-b", "DisplayName", "Povodne data");
+    dummy2 = plot(NaN, NaN,  "--r", "DisplayName", "Priemet");
+    dummy3 = plot(NaN, NaN,  "-k", "LineWidth", 1.5, "DisplayName", "Aproximacia");
+    legend([dummy1, dummy2, dummy3])
+    hold off
+end
+
+figure(NumberTitle='off');
+for i = 1:4
+    hold on
+    grid on
+    for j = 1:4
+        plot(t_split{i}, f_split{i}, "-b")
+        plot(t_split{i}, C(i, 5) * b{4}, "--r")
+        plot(t_split{i}, C(i, 2)*b{1} + C(i, 3)*b{2} + C(i, 4)*b{3} + C(i, 5)*b{4}, "-k", LineWidth=1.5)
+    end
+    vetikalne_ciary()
+    title("Aproximacia pomocou prvych styroch najvyznamnejsich mocninovych trendov")
+    xlabel("Pocet dni od 1. 1. 2024")
+    ylabel("Relativna hodnota akcie [$]")
+
+    dummy1 = plot(NaN, NaN, "-b", "DisplayName", "Povodne data");
+    dummy2 = plot(NaN, NaN,  "--r", "DisplayName", "Priemet");
+    dummy3 = plot(NaN, NaN,  "-k", "LineWidth", 1.5, "DisplayName", "Aproximacia");
+    legend([dummy1, dummy2, dummy3])
+    hold off
+end
+
+figure('Name', "Aproximacia dat pomocou prvych piatich najvyznamnejsich trendov", 'NumberTitle', 'off');
+for i = 1:4
+    % vertikalne ciary
+    xline(t(n), "--k")
+    xline(t(2*n), "--k")
+    xline(t(3*n), "--k")
+    
+    % jednotlive casti priemetu
+    hold on
+    for j = 1:4
+        plot(t_split{i}, f_split{i}, "-b")
+        plot(t_split{i}, C(i, 6) * b{5}, "--r")
+        plot(t_split{i}, C(i, 2)*b{1} + C(i, 3)*b{2} + C(i, 4)*b{3} + C(i, 5)*b{4} + C(i, 6)*b{5}, "-k", LineWidth=1.5)
+    end
+    hold off
+    grid on
+    
+end
