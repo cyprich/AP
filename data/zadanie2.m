@@ -335,7 +335,7 @@ for i = 1:length(figHandles)
     fig.PaperPosition = [0 0 width height]; % [left bottom width height]
     
     % Create the filename with figure number
-    filename = sprintf('zadanie2/figure_%d.png', i); 
+    filename = sprintf('zadanie2obrazky/figure_%d.png', i); 
     
     % Save the figure as PNG with specified resolution
     print(fig, filename, '-dpng', ['-r', num2str(resolution)]);
