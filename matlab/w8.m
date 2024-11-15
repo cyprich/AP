@@ -9,13 +9,14 @@ for n = 1:8
 end
 
 c = f * H^(-1);
+c_len = abs(c);
 % c = fft(f)./8;
 
 % druhy je najsilnejsi
 fp1 = 1 + c(3) * H(3,:) + c(7) * H(7,:);
 
 tt = linspace(0, 7, 10000);
-y1 = 1 + 2*real(c(3)) * cos(tt*2*2*pi/8) - 2*imag(c(3)) * sin(tt*2*2*pi/8);
+y1 =  1 + 2*real(c(3)) * cos(tt*2*2*pi/8) - 2*imag(c(3)) * sin(tt*2*2*pi/8);
 y2 = y1 + 2*real(c(2)) * cos(tt*1*2*pi/8) - 2*imag(c(2)) * sin(tt*1*2*pi/8);
 y3 = y2 + 2*real(c(4)) * cos(tt*3*2*pi/8) - 2*imag(c(4)) * sin(tt*3*2*pi/8);
 y4 = y3 + 2*real(c(5)) * cos(tt*4*2*pi/8) / 2;
@@ -30,3 +31,7 @@ plot(tt, y1, "-");
 plot(tt, y2, "-");
 plot(tt, y3, "-");
 plot(tt, y4, "-");
+
+
+figure
+plot(t, c_len, "-")
