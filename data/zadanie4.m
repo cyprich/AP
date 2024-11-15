@@ -1,7 +1,7 @@
 clear
 close all
 
-% Peter Cyprich = 12 pismen
+% Peter Cyprich = 12 znakov
 N = 12;
 
 % nacitanie dat zo suboru
@@ -13,10 +13,11 @@ f = f - mean(f);  % centrovanie dat
 
 
 % zobrazenie dat
-plot(t, f, '-', DisplayName="Hodnoty akcii");
+plot(t, f, '-', DisplayName="Hodnoty akcií");
 grid on
-title(sprintf("Povodne data - prvych %d hodnot - vycentrovane", N))
+title(sprintf("Dáta - prvých %d hodnôt - vycentrované", N))
 xlim([0 11])
+legend(Location="northwest")
 
 % ---------------------- harmonicka baza + spektra ------------------------
 
@@ -29,11 +30,12 @@ end
 
 c = f * H^(-1);  % spektrum
 ca = abs(c);  % amplitudove spektrum
+ca(7) = ca(7) / 2;
 
 figure
 plot(t, ca, "-")
 grid on
-title("Amplitudove spektrum")
+title("Amplitúdové spektrum")
 xlim([0 11])
 
 % --------------------------- harmonicke funkcie --------------------------
@@ -41,12 +43,12 @@ xlim([0 11])
 tt = linspace(0, N-1, 1000);
 
 index = 1;
-for X = [1 2 5 3 4 6]
+for X = [1 2 5 3 4 6]  % zoradenie podla najvyznamnejsich funkcii
     % y(t) = 2a * cos ((2pi/N) * nt) - 2b * sin ((2pi/N) * nt)
 
-    if index == 1  % iba prva iteracia ked este nepozname predchadzajucu funkciu
+    if index == 1  % iba prva iteracia, ked este nepozname predchadzajucu funkciu
         y{1} = c(1) + 2 * real(c(2)) * cos((2*pi/N) * 1 * tt) - 2 * imag(c(2)) * sin((2*pi/N) * 1 * tt);
-    elseif index == 6  % posledna iteracia ked treba vysledok podelit dvojkou
+    elseif index == 6  % posledna iteracia, ked treba vysledok podelit dvojkou
         y{6} = y{5} + real(c(7)) * cos((2*pi/N) * 6 * tt);
     else  % normalny beh for loopu
         y{index} = y{index - 1} + 2 * real(c(X + 1)) * cos((2*pi/N) * X * tt) - 2 * imag(c(X + 1)) * sin((2*pi/N) * X * tt);
@@ -56,25 +58,26 @@ for X = [1 2 5 3 4 6]
     hold on
     grid on
 
-    plot(t, f, "-", DisplayName="Data", LineWidth=1.5)
+    plot(t, f, "-", DisplayName="Dáta", LineWidth=1.5)
     for i = 1:(length(y) - 1)
-        plot(tt, y{i}, "-", DisplayName=sprintf("%d. najvyznamnejsia harmonicka funkcia", i))
+        plot(tt, y{i}, "-", DisplayName=sprintf("%d. najvýznamnejšia harmonická funkcia", i))
     end
-    plot(tt, y{end}, "-", DisplayName=sprintf("%d. najvyznamnejsia harmonicka funkcia", length(y)), LineWidth=1.25)  % podsledny je hrubsi
+    plot(tt, y{end}, "-", DisplayName=sprintf("%d. najvýznamnejšia harmonická funkcia", length(y)), LineWidth=1.25)  % podsledny je hrubsi
 
-    title("Harmonicke funkcie")
+    title("Harmonické funkcie")
     xlim([0 11])
     legend(Location="northwest")
     
     index = index + 1;
 end
 
+% graf interpolacie
 figure
 hold on
 grid on
-plot(t, f, "-o", DisplayName="Data")
-plot(tt, y{6}, "-", DisplayName="6. najvyznamnejsia harmonicka funkcia")
-title("Harmonicke funkcie - interpolacia")
+plot(t, f, "-o", DisplayName="Dáta")
+plot(tt, y{6}, "-", DisplayName="6. najvýznamnejšia harmonická funkcia")
+title("Harmonické funkcie - interpolácia")
 xlim([0 11])
 legend(Location="northwest")
 
