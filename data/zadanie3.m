@@ -279,7 +279,7 @@ figure
 hold on
 plot(t, f, "-", DisplayName="Hodnoty akcií")
 plot(t, fp8, "--", DisplayName="Pôvodný polynóm 8. stupňa")
-plot(t, fpx7, "-", DisplayName="Bez bez zložky x^7", LineWidth=1.25)
+plot(t, fpx7, "-", DisplayName="Bez zložky x^7", LineWidth=1.25)
 srandicky_do_grafu("Polynomická regresia - Polynóm 8. stupňa bez zložky x^7")
 
 % ------------------------ bez Q6 ---------------------------------------
