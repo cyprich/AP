@@ -6,7 +6,7 @@ f_full = import(:, 2)';
 l = length(f_full);  % dlzka dat
 
 
-figure; hold on; grid on; xlim([1 124]); legend; title("Dáta - hodnoty akcií spoločnosti EA"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
+figure; hold on; grid on; xlim([1 124]); title("Dáta - hodnoty akcií spoločnosti EA"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
 plot(t_full, f_full, "-", DisplayName="Dáta");
 
 % ----------------------- standardna MA ---------------------------
@@ -38,7 +38,7 @@ for i = 1:l
     end
 end
 
-figure; hold on; grid on; xlim([1 124]); title("Filtrácia pomocou štandardnej metódy MA(2)"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
+figure; hold on; grid on; xlim([1 124]); legend; title("Filtrácia pomocou štandardnej metódy MA(2)"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
 plot(t_full, f_full, DisplayName="Dáta");
 plot(t_full, ma2_std, LineWidth=1.5, DisplayName="Štandardná MA(2)");
 
@@ -106,19 +106,28 @@ plot(t_full(3:l-2), ma4_adapt, DisplayName="Adaptabilná MA(4)");
 plot(t_full(4:l-3), ma6_adapt, LineWidth=1.5, DisplayName="Adaptabilná MA(6)");
 
 % ---------- MA spolocne ---------- 
+% chyby
+e_ma2_std = sqrt(sum((f_full(2:l-1) - ma2_std(2:l-1)).^2)) / (l-2);
+e_ma4_std = sqrt(sum((f_full(3:l-2) - ma4_std(3:l-2)).^2)) / (l-4);
+e_ma6_std = sqrt(sum((f_full(4:l-3) - ma6_std(4:l-3)).^2)) / (l-6);
 
+e_ma2_adapt = sqrt(sum((f_full(2:l-1) - ma2_adapt).^2)) / (l-2);
+e_ma4_adapt = sqrt(sum((f_full(3:l-2) - ma4_adapt).^2)) / (l-4);
+e_ma6_adapt = sqrt(sum((f_full(4:l-3) - ma6_adapt).^2)) / (l-6);
+
+% grafy
 figure; hold on; grid on; xlim([1 124]); legend; title("Porovnanie štandardnej a adaptabilnej metódy MA(2)"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
-plot(t_full, f_full)
+plot(t_full, f_full, DisplayName="Dáta")
 plot(t_full, ma2_std, LineWidth=1.5, DisplayName="Štandardná MA(2)");
 plot(t_full(2:l-1), ma2_adapt, LineWidth=1.5, DisplayName="Adaptabilná MA(2)");
 
 figure; hold on; grid on; xlim([1 124]); legend; title("Porovnanie štandardnej a adaptabilnej metódy MA(4)"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
-plot(t_full, f_full)
+plot(t_full, f_full, DisplayName="Dáta")
 plot(t_full, ma4_std, LineWidth=1.5, DisplayName="Štandardná MA(4)");
 plot(t_full(3:l-2), ma4_adapt, LineWidth=1.5, DisplayName="Adaptabilná MA(4)");
 
 figure; hold on; grid on; xlim([1 124]); legend; title("Porovnanie štandardnej a adaptabilnej metódy MA(6)"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]");
-plot(t_full, f_full)
+plot(t_full, f_full, DisplayName="Dáta")
 plot(t_full, ma6_std, LineWidth=1.5, DisplayName="Štandardná MA(6)");
 plot(t_full(4:l-3), ma6_adapt, LineWidth=1.5, DisplayName="Adaptabilná MA(6)");
 
