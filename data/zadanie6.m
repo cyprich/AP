@@ -3,9 +3,8 @@ clear; close all;
 import = readmatrix("matlabized_data2.csv");
 t_full = import(:, 1)';
 f_full = import(:, 2)';
-l = length(f_full);  % pocet dat
 
-figure; hold on; grid on; xlim([1 l])
+figure; hold on; grid on; xlim([1 124])
 plot(t_full, f_full, "-")
 
 % function fp = f_ma(f, n)  % funkcia na vypocet AR(n), parametre su (data, n), vrati hodnotu fp
@@ -31,61 +30,75 @@ plot(t_full, f_full, "-")
 % 
 % end
 
-
 % -------------------- MA(2) --------------------
-f = f_full(2: l-2);
-ma_2_t = t_full(2: l-2);
+f = f_full(2: 123);
+ma_2_t = t_full(2: 123);
 
-b1 = f_full(3: l-1);
-b2 = f_full(1: l-3);
+b1 = f_full(1: 122);
+b2 = f_full(3: 124);
 B = [b1; b2];
 
 c = (f*B')*(B*B')^(-1);
 ma_2_std = c*B;
 
 % -------------------- MA(4) --------------------
-f = f_full(4: l-4);
-ma_4_t = t_full(4: l-4);
+f = f_full(3: 122);
+ma_4_t = t_full(3: 122);
 
-b1 = f_full(3: l-5);
-b2 = f_full(2: l-6);
-b3 = f_full(5: l-3);
-b4 = f_full(6: l-2);
+b1 = f_full(1: 120);
+b2 = f_full(2: 121);
+b3 = f_full(4: 123);
+b4 = f_full(5: 124);
+
 B = [b1; b2; b3; b4];
 
 c = (f*B')*(B*B')^(-1);
 ma_4_std = c*B;
 
+% -------------------- MA(4) --------------------
+% f = f_full(3: l-2);
+% l = length(f);
+% ma_4_t = t_full(3: l-2);
+% 
+% b1 = f_full(2: l-3);
+% b2 = f_full(1: l-4);
+% b3 = f_full(4: l-1);
+% b4 = f_full(5: l);
+% B = [b1; b2; b3; b4];
+% 
+% c2 = (f*B')*(B*B')^(-1);
+% ma_4_std = c2*B;
+
 % -------------------- MA(6) --------------------
-f = f_full(6: l-6);
-ma_6_t = t_full(6: l-6);
+% f = f_full(6: l-6);
+% ma_6_t = t_full(6: l-6);
+% 
+% b1 = f_full(5: l-7);
+% b2 = f_full(4: l-8);
+% b3 = f_full(3: l-9);
+% b4 = f_full(7: l-5);
+% b5 = f_full(8: l-4);
+% b6 = f_full(9: l-3);
+% B = [b1; b2; b3; b4];
+% 
+% c = (f*B')*(B*B')^(-1);
+% ma_6_std = c*B;
 
-b1 = f_full(5: l-7);
-b2 = f_full(4: l-8);
-b3 = f_full(3: l-9);
-b4 = f_full(7: l-5);
-b5 = f_full(8: l-4);
-b6 = f_full(9: l-3);
-B = [b1; b2; b3; b4];
 
-c = (f*B')*(B*B')^(-1);
-ma_6_std = c*B;
-
-
-figure; hold on; grid on; xlim([1, l]); legend;
+figure; hold on; grid on; xlim([1, 124]); legend;
 plot(t_full, f_full, '-', DisplayName="Povodne data");
 plot(ma_2_t, ma_2_std, '-', LineWidth=1.5,DisplayName="Standardna metoda MA(2)");
 
-figure; hold on; grid on; xlim([1, l]); legend;
+figure; hold on; grid on; xlim([1, 124]); legend;
 plot(t_full, f_full, '-', DisplayName="Povodne data");
 plot(ma_2_t, ma_2_std,'--', DisplayName="Standardna metoda MA(2)");
 plot(ma_4_t, ma_4_std,'-', LineWidth=1.5, DisplayName="Standardna metoda MA(4)");
 
-figure; hold on; grid on; xlim([1, l]); legend;
-plot(t_full, f_full, '-', DisplayName="Povodne data");
-plot(ma_2_t, ma_2_std,'--', DisplayName="Standardna metoda MA(2)");
-plot(ma_4_t, ma_4_std,'--', DisplayName="Standardna metoda MA(4)");
-plot(ma_6_t, ma_6_std,'-', LineWidth=1.5, DisplayName="Standardna metoda MA(6)");
+% figure; hold on; grid on; xlim([1, 124]); legend;
+% plot(t_full, f_full, '-', DisplayName="Povodne data");
+% plot(ma_2_t, ma_2_std,'--', DisplayName="Standardna metoda MA(2)");
+% plot(ma_4_t, ma_4_std,'--', DisplayName="Standardna metoda MA(4)");
+% plot(ma_6_t, ma_6_std,'-', LineWidth=1.5, DisplayName="Standardna metoda MA(6)");
 
 
 
