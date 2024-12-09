@@ -11,6 +11,7 @@ t = t_full(1:cut);
 f = f_full(1:cut);
 
 tt = linspace(1, cut, 10000);
+tt_full = linspace(1, length(f_full), length(tt));
 
 % ------------------ slide 1 --------------------
 figure;
@@ -18,17 +19,17 @@ hold on;
 grid on;
 plot(t_full, f_full, "--", color=[0 0.4470 0.7410], LineWidth=0.25, DisplayName="Odstránené dáta");
 plot(t, f, "-b", color=[0 0.4470 0.7410], DisplayName="Dáta");
-xline(cut, "--k", HandleVisibility="off")
 title("Dáta - hodnoty akcií spoločnosti EA")
 xlabel("Počet dní od 1. 1. 2024")
 ylabel("Hodnota akcie [$]")
 xlim([1, 124]);
+xline(cut, "--k", HandleVisibility="off")
 xticks(unique([xticks(), cut]));
 legend;
 
 % ------------------ slide 2 --------------------
 
-n = 10;
+n = 6;  % velkost polynomu 
 
 for i = 1:n+1;
     b{i} = t.^(i-1);
@@ -68,6 +69,8 @@ grid on;
 plot(t, (f_old - mean(f_old)), "--", LineWidth=0.25, DisplayName="Pôvodné dáta");
 plot(t, f, "-", DisplayName="Dáta bez globálneho trendu");
 xlim([1, cut]);
+title("Dáta s odstráneným globálnym trendom");
+xlabel("Počet dní od 1. 1. 2024")
 legend;
 
 % ------------------ slide 4 --------------------
@@ -81,25 +84,26 @@ end
 c_h = f * H^(-1);
 ca_h = abs(c_h);  % amplitudove spektrum
 
-% for i = 1:(length(ca)/2)+10
-%     ca2(i, 1) = ca(i);
-%     ca2(i, 2) = i-1;
-% end
+for i = 1:(length(ca_h)/2)+10
+    ca2(i, 1) = ca_h(i);
+    ca2(i, 2) = i-1;
+end
 
 figure;
 hold on;
 grid on;
 plot(t, ca_h, "-")
-title("Ampliúdové spektrum")
-xlim([1, cut])
+title("Amplitúdové spektrum")
+xlim([1, cut]);
+xlabel("Počet dní od 1. 1. 2024");
 xline((cut + 2)/2, "--k", LineWidth=0.125)
 
 % ------------------ slide 5 --------------------
 % y(t) = 2a * cos ((2pi/N) * nt) - 2b * sin ((2pi/N) * nt)
 
-najvyznamnejsie = [6 8 5 26 16]; % najvyznamnejsie koeficienty (indexovane od 1)
-y{1} = 2 * real(c_h(6)) * cos((2*pi/N) * 5 * tt) - 2 * imag(c_h(6)) * sin((2 * pi / N) * 5 * tt);
+najvyznamnejsie = [6 8 5 26 16]; % indexy najvyznamnejsich koeficientov (indexovane od 1)
 
+y{1} = 2 * real(c_h(6)) * cos((2*pi/N) * 5 * tt) - 2 * imag(c_h(6)) * sin((2 * pi / N) * 5 * tt);
 for i = 2:length(najvyznamnejsie)
     k = najvyznamnejsie(i);
     y{i} = y{i - 1} + 2 * real(c_h(k)) * cos((2*pi/N) * (k-1) * tt) - 2 * imag(c_h(k)) * sin((2 * pi / N) * (k-1) * tt);
@@ -111,6 +115,8 @@ for i = 1:length(y)
     hold on;
     grid on;
     plot(t, f, "-k", DisplayName="Dáta");
+    title("Harmonické funkcie");
+    xlabel("Počet dní od 1. 1. 2024");
     xlim([1 cut]);
     
     j = 1;
@@ -124,21 +130,32 @@ end
 
 % ------------------ slide 6 --------------------
 
+for i = 1:length(c)
+    B_full(i, :) = tt_full.^(i - 1);
+end
+fpp_full = c'* B_full;
 
-fpp = fpp - mean(fpp);
-final = fpp + y{length(y)};
+N_full = length(f_full);
+y_full = 0;
+for i = 1:length(najvyznamnejsie)
+    k = najvyznamnejsie(i);
+    y_full = y_full + 2 * real(c_h(k)) * cos((2*pi/N_full) * (k-1) * tt_full) - 2 * imag(c_h(k)) * sin((2 * pi / N_full) * (k-1) * tt_full);
+end
+
+final = fpp_full + y_full;
+final = final - mean(final);
 
 figure;
 hold on
 grid on
-plot(t, (f_old - mean(f_old)), "-", DisplayName="Dáta")
-% plot(tt, fpp, "-", DisplayName="Polynóm")
-% plot(tt, y{length(y)}, "-", DisplayName="Harmonická funkcia")
-plot(tt, final, "-", DisplayName="Celková regresná funkcia", LineWidth=1.5)
-xlim([1, cut])
-title("Regresná funkcia")
+plot(t_full, (f_full- mean(f_full)), "-", DisplayName="Dáta")
+plot(tt_full, final, "-", DisplayName="Celková regresná funkcia", LineWidth=1.5)
+xlim([1, length(f_full)]);
+xline(cut, "--k", HandleVisibility="off")
+xticks(unique([xticks(), cut]));
+title("Regresná funkcia");
+xlabel("Počet dní od 1. 1. 2024");
 legend
-
 
 % ----------------------- exportovanie obrazkov ---------------------------
 resolution = 300;
