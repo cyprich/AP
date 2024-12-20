@@ -3,9 +3,9 @@ import = readmatrix("matlabized_data2.csv");
 f_full = import(:, 2)';
 t_full = import(:, 1)';
 F = reshape(f_full(1:121), 11, 11);  % premeni data na 11x11 maticu
-F = F';
+F = (F') - mean((F'));  % vycentrovana a transponovana matica
 
-figure; hold on; grid on; legend; xlim([1 120]); title("Dáta - hodnoty akcií spoločnosti EA"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]"); 
+figure; hold on; grid on; legend; xlim([1 121]); title("Dáta - hodnoty akcií spoločnosti EA"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]"); 
 plot(t_full, f_full, DisplayName="Povodne data"); 
 
 figure; hold on; grid on; legend(Location="northeastoutside"); title("Rozdelene data"); xlabel("Počet dní od 1. 1. 2024"); ylabel("Hodnota akcie [$]"); xlim([1 121]); 
@@ -18,6 +18,39 @@ figure; hold on; grid on; legend(Location="northeastoutside"); title("Rozdelene 
 for i = 1:11
     plot(F(i, :), DisplayName=sprintf("%d. cast dat", i));
 end
+
+% ------------------ kovariancna matica --------------------
+R = cov(F);
+
+% for i = 1:30
+%     figure; hold on; title("Kovariancna matica"); xlabel("X"); ylabel("Y"), zlabel("Z")
+%     surf(R);
+%     view(i*12, 45);
+% end
+
+% ------------------- vlastne cisla -----------------------
+[U, S, V] = svd(R);
+vlastne_cisla = diag(S);
+
+figure, grid on; hold on; title("Spektrum vlastnych cisel")
+plot(vlastne_cisla);
+
+% ---------------- karhunen-loeve baza vlastnych vektorov ----------------
+C = F * U;
+
+% ------------------------- pohlady v1v2 v1v3 v2v3 ------------------------
+figure; hold on; grid on; title("Zobrazenie v rovine v1v2"); xlabel('v1'); ylabel('v2');
+plot(C(:, 1), C(:, 2), ".", MarkerSize=16);
+
+figure; hold on; grid on; title("Zobrazenie v rovine v1v3"); xlabel('v1'); ylabel('v3');
+plot(C(:, 1), C(:, 3), ".", MarkerSize=16);
+
+figure; hold on; grid on; title("Zobrazenie v rovine v2v3"); xlabel('v2'); ylabel('v3');
+plot(C(:, 2), C(:, 3), ".", MarkerSize=16);
+
+info1 = (vlastne_cisla(1) + vlastne_cisla(2)) / sum(vlastne_cisla);
+info2 = (vlastne_cisla(1) + vlastne_cisla(3)) / sum(vlastne_cisla);
+info3 = (vlastne_cisla(2) + vlastne_cisla(3)) / sum(vlastne_cisla);
 
 
 
@@ -69,4 +102,4 @@ for n = 1:length(figHandles)
     print(fig, filename, '-dpng', ['-r', num2str(resolution)]);
 end
 
-close all;
+% close all;

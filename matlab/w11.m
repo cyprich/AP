@@ -91,6 +91,8 @@ C = X*U
 
 L = diag(S)
 figure
+hold on
+title("L")
 plot(L)
 
 figure
