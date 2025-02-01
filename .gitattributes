@@ -1,1 +1,3 @@
-*.ipynb liguist-documentation
+pythonoviny/*.ipynb liguist-documentation  
+*.ipynb linguist-documentation  
+
