@@ -1,4 +1,4 @@
-# Analyza procesov
+# Analýza procesov
 
-Materialy k predmetu Analyza Procesov  
-Hlavne kvoli Matlabu  
+Materiály k predmetu Analýza Procesov  
+Hlavne kvôli Matlabu
